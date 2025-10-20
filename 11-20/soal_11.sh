@@ -1,13 +1,10 @@
 #!/bin/bash
 
-# Konfigurasi Reverse Proxy Sirion
 echo "Mengkonfigurasi Reverse Proxy Sirion..."
 
-# Install nginx
 apt update
 apt install -y nginx
 
-# Buat konfigurasi nginx untuk Sirion
 cat > /etc/nginx/sites-available/sirion.conf << 'EOF'
 server {
     listen 5151;
