@@ -1,69 +1,59 @@
-#!/bin/bash
-
-# Konfigurasi Basic Auth untuk path /admin
-echo "Mengkonfigurasi Basic Auth untuk /admin..."
-
-# Install apache2-utils untuk htpasswd
-apt update
+# Install tools
 apt install -y apache2-utils
 
-# Buat direktori untuk password file
-mkdir -p /etc/nginx/conf.d
-
-# Buat password file (username: admin, password: admin123)
-htpasswd -bc /etc/nginx/conf.d/.htpasswd admin admin123
-
-# Update konfigurasi nginx untuk menambahkan basic auth
-cat > /etc/nginx/conf.d/admin-auth.conf << 'EOF'
-location /admin {
-    auth_basic "Administration Area";
-    auth_basic_user_file /etc/nginx/conf.d/.htpasswd;
-    return 200 "Admin Area - Access Granted";
-    add_header Content-Type text/plain;
-}
+# Buat directory admin
+mkdir -p /var/www/admin
+cat > /var/www/admin/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Area</title>
+</head>
+<body>
+    <h1>Admin Panel k14.com</h1>
+    <p>Protected by Basic Authentication</p>
+</body>
+</html>
 EOF
 
-# Update konfigurasi utama Sirion
-cat > /etc/nginx/sites-available/sirion.conf << 'EOF'
+# Buat user/password
+htpasswd -bc /etc/nginx/.htpasswd admin admin123
+
+# Update config nginx
+cat > /etc/nginx/sites-available/default << 'EOF'
 server {
-    listen 5151;
-    server_name sirion.k-14.com www.k-14.com;
+    listen 80;
+    server_name sirion.k14.com www.k14.com;
     
-    # Include basic auth configuration
-    include /etc/nginx/conf.d/admin-auth.conf;
+    # Basic Auth untuk /admin
+    location /admin {
+        auth_basic "Admin Area";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+        root /var/www;
+        index index.html index.htm;
+    }
     
-    # Path-based routing
     location /static/ {
-        proxy_pass http://10.15.43.32:5209/;
+        proxy_pass http://10.15.43.38/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        rewrite ^/static/(.*)$ /$1 break;
     }
     
     location /app/ {
-        proxy_pass http://10.15.43.32:5526/;
+        proxy_pass http://10.15.43.39/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        rewrite ^/app/(.*)$ /$1 break;
     }
     
     location / {
-        return 301 http://www.k-14.com$request_uri;
+        root /var/www/html;
+        index index.html index.htm;
     }
-}
-
-server {
-    listen 5151;
-    server_name _;
-    return 301 http://www.k-14.com$request_uri;
 }
 EOF
 
-# Restart nginx dengan menghentikan dan memulai ulang
-nginx -s stop 2>/dev/null || true
-nginx
-
-echo "Basic Auth untuk /admin berhasil dikonfigurasi!"
-echo "Username: admin, Password: admin123"
+nginx -t && systemctl restart nginx
