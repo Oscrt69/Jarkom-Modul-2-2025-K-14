@@ -1,17 +1,9 @@
-#!/bin/bash
+nslookup havens.k14.com localhost
 
-# Verifikasi CNAME Havens
-echo "Verifikasi CNAME Havens..."
+curl -s -I http://havens.k14.com/ | head -n 3
 
-# Havens sudah ada di zone file, lakukan verifikasi
-echo "Verifikasi Havens CNAME dari localhost:"
-nslookup havens.k-14.com localhost
-
-echo "Verifikasi bahwa havens.k-14.com mengarah ke www.k-14.com:"
-nslookup -type=CNAME havens.k-14.com localhost
-
-# Test akses web
-echo "Testing akses web melalui havens.k-14.com:"
-curl -s -I http://havens.k-14.com:5151/ | head -n 1
-
-echo "CNAME Havens berhasil diverifikasi!"
+www_title=$(curl -s http://www.k14.com/ | grep -o '<title>[^<]*' | head -1)
+havens_title=$(curl -s http://havens.k14.com/ | grep -o '<title>[^<]*' | head -1)
+echo "www.k14.com title: $www_title"
+echo "havens.k14.com title: $havens_title"
+    
