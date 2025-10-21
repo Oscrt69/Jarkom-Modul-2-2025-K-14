@@ -1,52 +1,32 @@
-#!/bin/bash
+# Backup zone file
+cp /etc/bind/zones/k14.com.zone /etc/bind/zones/k14.com.zone.backup
 
-# Script untuk perubahan IP Lindon dan TTL
-echo "Mengubah IP Lindon dan mengatur TTL..."
+# Update zone file dengan IP baru Lindon dan TTL 30 detik
+cat > /etc/bind/zones/k14.com.zone << 'EOF'
+$TTL    30
+@       IN      SOA     ns1.k14.com. admin.k14.com. (
+                              2024102003 ; Serial
+                          604800     ; Refresh
+                           86400     ; Retry
+                        2419200     ; Expire
+                            30 )    ; Negative Cache TTL
+;
+@       IN      NS      ns1.k14.com.
+@       IN      NS      ns2.k14.com.
 
-# Update zone file di Tirion (ns1)
-cat > /etc/bind/zones/k-14.com.zone << 'EOF'
-$TTL 30
-$ORIGIN k-14.com.
-@       IN      SOA     ns1.k-14.com. admin.k-14.com. (
-                        2024101002 ; Serial
-                        28800      ; Refresh
-                        7200       ; Retry
-                        604800     ; Expire
-                        30         ; Minimum TTL
-                        )
+; A records
+@       IN      A       10.15.43.37
+ns1     IN      A       10.15.43.35
+ns2     IN      A       10.15.43.36
+sirion  IN      A       10.15.43.37
+lindon  IN      A       10.15.43.40  ; IP BARU
+vingilot IN     A       10.15.43.39
 
-; NS Records
-@       IN      NS      ns1.k-14.com.
-@       IN      NS      ns2.k-14.com.
-
-; A Records
-@       IN      A       10.15.43.32    ; Sirion
-ns1     IN      A       10.15.43.32    ; Tirion
-ns2     IN      A       10.15.43.32    ; Valmar
-sirion  IN      A       10.15.43.32
-lindon  IN      A       10.15.43.33    ; IP Baru Lindon
-vingilot IN     A       10.15.43.32
+; CNAME records
 www     IN      CNAME   sirion
 static  IN      CNAME   lindon
 app     IN      CNAME   vingilot
-havens  IN      CNAME   www
-melkor  IN      TXT     "Morgoth (Melkor)"
-morgoth IN      CNAME   melkor
-
-; Client records
-earendil IN     A       10.15.43.32
-elwing   IN      A       10.15.43.32
-cirdan   IN      A       10.15.43.32
-elrond   IN      A       10.15.43.32
-maglor   IN      A       10.15.43.32
 EOF
 
 # Restart BIND9
-service bind9 restart
-
-echo "IP Lindon diubah menjadi 10.15.43.33 dengan TTL 30 detik"
-echo "Serial number diperbarui: 2024101002"
-
-# Verifikasi perubahan
-echo "Verifikasi perubahan:"
-nslookup lindon.k-14.com localhost
+systemctl restart bind9
