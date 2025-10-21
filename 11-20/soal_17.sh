@@ -1,50 +1,31 @@
-#!/bin/bash
+# Enable services berdasarkan node
+HOSTNAME=$(hostname)
 
-# Konfigurasi Autostart Services untuk Docker
-echo "Mengkonfigurasi autostart services untuk Docker environment..."
+case $HOSTNAME in
+    "tirion"|"valmar")
+        echo "🔧 Configuring BIND9 autostart..."
+        systemctl enable bind9
+        systemctl start bind9
+        ;;
+    "sirion"|"lindon")
+        echo "🔧 Configuring nginx autostart..."
+        systemctl enable nginx
+        systemctl start nginx
+        ;;
+    "vingilot")
+        echo "🔧 Configuring nginx & PHP-FPM autostart..."
+        systemctl enable nginx php8.4-fpm
+        systemctl start nginx php8.4-fpm
+        ;;
+    *)
+        echo "🔧 No specific services for this node"
+        ;;
+esac
 
-# Buat script startup untuk Docker
-cat > /root/startup-services.sh << 'EOF'
-#!/bin/bash
+# Verifikasi status
+echo "SERVICE STATUS:"
+if systemctl is-active --quiet bind9 2>/dev/null; then echo "✅ bind9: ACTIVE"; fi
+if systemctl is-active --quiet nginx 2>/dev/null; then echo "✅ nginx: ACTIVE"; fi
+if systemctl is-active --quiet php8.4-fpm 2>/dev/null; then echo "✅ php8.4-fpm: ACTIVE"; fi
 
-# Start BIND9
-service bind9 start
-
-# Start nginx
-nginx
-
-# Start PHP-FPM
-service php8.4-fpm start
-
-# Keep container running
-tail -f /dev/null
-EOF
-
-chmod +x /root/startup-services.sh
-
-# Buat supervisor config untuk manage multiple services
-apt update
-apt install -y supervisor
-
-cat > /etc/supervisor/conf.d/services.conf << 'EOF'
-[program:bind9]
-command=service bind9 start
-autostart=true
-autorestart=true
-
-[program:nginx]
-command=nginx -g "daemon off;"
-autostart=true
-autorestart=true
-
-[program:php-fpm]
-command=service php8.4-fpm start
-autostart=true
-autorestart=true
-EOF
-
-# Start supervisor
-service supervisor start
-
-echo "Autostart services berhasil dikonfigurasi untuk Docker!"
-echo "Services akan dijalankan oleh supervisor"
+echo "✅ Soal 17 selesai: Autostart services configured"
