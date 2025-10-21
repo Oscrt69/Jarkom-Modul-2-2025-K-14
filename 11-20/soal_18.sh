@@ -1,56 +1,35 @@
-#!/bin/bash
-
-# Tambahkan record TXT Melkor dan CNAME Morgoth
-echo "Menambahkan record TXT Melkor dan CNAME Morgoth..."
-
 # Update zone file
-cat > /etc/bind/zones/k-14.com.zone << 'EOF'
-$TTL 30
-$ORIGIN k-14.com.
-@       IN      SOA     ns1.k-14.com. admin.k-14.com. (
-                        2024101003 ; Serial
-                        28800      ; Refresh
-                        7200       ; Retry
-                        604800     ; Expire
-                        30         ; Minimum TTL
-                        )
+cat > /etc/bind/zones/k14.com.zone << 'EOF'
+$TTL    30
+@       IN      SOA     ns1.k14.com. admin.k14.com. (
+                              2024102004 ; Serial
+                          604800     ; Refresh
+                           86400     ; Retry
+                        2419200     ; Expire
+                            30 )    ; Negative Cache TTL
+;
+@       IN      NS      ns1.k14.com.
+@       IN      NS      ns2.k14.com.
 
-; NS Records
-@       IN      NS      ns1.k-14.com.
-@       IN      NS      ns2.k-14.com.
+; A records
+@       IN      A       10.15.43.37
+ns1     IN      A       10.15.43.35
+ns2     IN      A       10.15.43.36
+sirion  IN      A       10.15.43.37
+lindon  IN      A       10.15.43.40
+vingilot IN     A       10.15.43.39
 
-; A Records
-@       IN      A       10.15.43.32    ; Sirion
-ns1     IN      A       10.15.43.32    ; Tirion
-ns2     IN      A       10.15.43.32    ; Valmar
-sirion  IN      A       10.15.43.32
-lindon  IN      A       10.15.43.33
-vingilot IN     A       10.15.43.32
+; CNAME records
 www     IN      CNAME   sirion
 static  IN      CNAME   lindon
 app     IN      CNAME   vingilot
-havens  IN      CNAME   www
-
-; Evil records
-melkor  IN      TXT     "Morgoth (Melkor)"
 morgoth IN      CNAME   melkor
 
-; Client records
-earendil IN     A       10.15.43.32
-elwing   IN      A       10.15.43.32
-cirdan   IN      A       10.15.43.32
-elrond   IN      A       10.15.43.32
-maglor   IN      A       10.15.43.32
+; TXT record
+melkor  IN      TXT     "Morgoth (Melkor)"
 EOF
 
-# Restart BIND9
-service bind9 restart
+systemctl restart bind9
 
-echo "Record TXT dan CNAME berhasil ditambahkan!"
-
-# Verifikasi
-echo "Verifikasi record TXT:"
-nslookup -type=TXT melkor.k-14.com localhost
-
-echo "Verifikasi CNAME:"
-nslookup -type=CNAME morgoth.k-14.com localhost
+nslookup -type=TXT melkor.k14.com localhost
+nslookup -type=CNAME morgoth.k14.com localhost
