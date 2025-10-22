@@ -1,26 +1,190 @@
 # Jarkom-Modul-2-2025-K-14
 
 ## Soal 1
+### Konfigurasi Topologi Dasar & NAT (Eonwe)
+Membuat router **EONWE** dengan NAT agar seluruh jaringan internal dapat mengakses internet.  
+Konfigurasi meliputi:
+- IP Forwarding  
+- Setup interface `eth0` (NAT) dan `eth1–eth3` (internal subnet)
+- Routing dan DNS resolver
+- Konfigurasi iptables untuk NAT (POSTROUTING & FORWARD rules)
+
+**File Script:** `setup_eonwe.sh`
+
+---
 
 ## Soal 2
+### Konfigurasi Client
+Setup klien di masing-masing subnet:
+- **Barat:** Earendil, Elwing  
+- **Timur:** Cirdan, Elrond, Maglor  
+- **DMZ:** Sirion, Lindon, Vingilot  
+
+Semua dikonfigurasi dengan IP statis, default gateway menuju Eonwe, dan DNS sementara `192.168.122.1`.
+
+**File Script:** `setup_client_[nama].sh`
+
+---
 
 ## Soal 3
+### DNS Master (Tirion - ns1)
+Konfigurasi DNS Master menggunakan **Bind9** di **Tirion**:
+- Domain: `K14.com`
+- File zone: `/etc/bind/zones/db.K14.com`
+- Menyimpan A record untuk semua host (router, klien, DMZ)
+- Menyediakan akses transfer ke DNS slave (`192.218.3.3`)
+
+**File Script:** `setup_tirion_ns1.sh`
+
+---
 
 ## Soal 4
+### DNS Slave (Valmar - ns2)
+Konfigurasi **Valmar** sebagai DNS Slave dari Tirion:
+- Menerima zone transfer dari `ns1`
+- File zone tersimpan otomatis di `/var/cache/bind/`
+- Menggunakan `type slave` dan `masters { 192.218.3.2; };`
 
-## Soal 5 
+**File Script:** `setup_valmar_ns2.sh`
+
+---
+
+## Soal 5
+### Verifikasi Konektivitas & DNS
+Pengujian:
+- Ping antar subnet (Barat, Timur, DMZ)
+- Ping ke internet (`8.8.8.8`)
+- Resolusi DNS:
+  ```bash
+  nslookup K14.com
+  nslookup earendil.K14.com
+  dig K14.com
+  host cirdan.K14.com
+
+---
 
 ## Soal 6
 
+### File Script
+`soal6_check_zone_transfer.sh`
+
+### Perintah Uji
+```bash
+bash soal6_check_zone_transfer.sh
+```
+
 ## Soal 7
+Tujuan
+Menambahkan A Record dan CNAME Record baru pada domain K14.com untuk mengarahkan subdomain ke host di jaringan DMZ.
 
-## Soal 8
+Deskripsi
 
-## Soal 9
+### A Record:
 
-## Soal 10
+> sirion.K14.com → 192.218.3.4
 
----
+> lindon.K14.com → 192.218.3.5
+
+> vingilot.K14.com → 192.218.3.6
+
+### CNAME Record:
+
+> www.K14.com → sirion.K14.com
+
+> static.K14.com → lindon.K14.com
+
+> app.K14.com → vingilot.K14.com
+
+### File Script
+```
+soal7_update_zone_records.sh
+```
+### Perintah Uji
+```
+dig @192.218.3.2 www.K14.com +short
+dig @192.218.3.2 static.K14.com +short
+dig @192.218.3.2 app.K14.com +short
+```
+
+### Soal 8
+
+Zone: 3.218.192.in-addr.arpa
+
+### PTR Records:
+
+> 192.218.3.4 → sirion.K14.com
+
+> 192.218.3.5 → lindon.K14.com
+
+> 192.218.3.6 → vingilot.K14.com
+
+File Script
+```
+soal8_reverse_dns.sh
+```
+Perintah Uji
+```
+dig -x 192.218.3.4 +short
+dig -x 192.218.3.5 +short
+dig -x 192.218.3.6 +short
+```
+
+Output:
+```
+sirion.K14.com.
+lindon.K14.com.
+vingilot.K14.com.
+```
+### Soal 9
+🎯 Tujuan
+Membuat web server statis di Lindon menggunakan Nginx, menampilkan file HTML statis.
+
+📘 Deskripsi
+Domain: static.K14.com
+
+Root: /var/www/static
+
+Mengaktifkan autoindex untuk menampilkan direktori /annals/
+
+Menjalankan server pada port default 80
+
+📂 File Script
+soal9_web_statis_lindon.sh
+
+🧩 Perintah Uji
+bash
+Salin kode
+curl http://static.K14.com
+curl http://static.K14.com/annals/
+⚙️ Soal 10 – Web Server Dinamis (Vingilot)
+🎯 Tujuan
+Membuat web server dinamis di Vingilot menggunakan Nginx + PHP-FPM agar dapat menjalankan file .php.
+
+📘 Deskripsi
+Domain: app.K14.com
+
+Root: /var/www/app
+
+File:
+
+index.php → Menampilkan informasi umum
+
+about.php → Menampilkan detail server atau identitas kelompok
+
+Mengaktifkan PHP-FPM socket (/run/php/php7.4-fpm.sock)
+
+📂 File Script
+soal10_web_dinamis_vingilot.sh
+
+🧩 Perintah Uji
+bash
+Salin kode
+curl http://app.K14.com
+curl http://app.K14.com/about.php
+✅ Output Diharapkan
+Menampilkan halaman PHP dinamis berisi teks atau informasi server.
+
+
 
 ## Soal 11
 **File:** `soal_11.sh`  
@@ -178,6 +342,9 @@ Membuat halaman web utama yang menampilkan tema **“War of Wrath: Lindon Bertah
 
 Output:  
 Halaman dapat diakses di:  
-👉 `http://www.k14.com`
+`http://www.k14.com`
 
+Langkah Uji: verify_koneksi_dns.sh
 ---
+
+
