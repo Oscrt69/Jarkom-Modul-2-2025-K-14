@@ -1,6 +1,9 @@
 # Jarkom-Modul-2-2025-K-14
 
 ## Soal 1
+
+<img width="647" height="492" alt="Screenshot 2025-10-20 113759" src="https://github.com/user-attachments/assets/f0897692-fe6e-4513-b2d7-33995d344134" />
+
 ### Konfigurasi Topologi Dasar & NAT (Eonwe)
 Membuat router **EONWE** dengan NAT agar seluruh jaringan internal dapat mengakses internet.  
 Konfigurasi meliputi:
