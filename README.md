@@ -109,7 +109,7 @@ dig @192.218.3.2 static.K14.com +short
 dig @192.218.3.2 app.K14.com +short
 ```
 
-### Soal 8
+## Soal 8
 
 Zone: 3.218.192.in-addr.arpa
 
@@ -138,11 +138,8 @@ sirion.K14.com.
 lindon.K14.com.
 vingilot.K14.com.
 ```
-### Soal 9
-🎯 Tujuan
-Membuat web server statis di Lindon menggunakan Nginx, menampilkan file HTML statis.
+## Soal 9
 
-📘 Deskripsi
 Domain: static.K14.com
 
 Root: /var/www/static
@@ -151,43 +148,47 @@ Mengaktifkan autoindex untuk menampilkan direktori /annals/
 
 Menjalankan server pada port default 80
 
-📂 File Script
+File Script
+```
 soal9_web_statis_lindon.sh
+```
 
-🧩 Perintah Uji
-bash
-Salin kode
+Perintah Uji
 curl http://static.K14.com
 curl http://static.K14.com/annals/
-⚙️ Soal 10 – Web Server Dinamis (Vingilot)
-🎯 Tujuan
+
+## Soal 10 – Web Server Dinamis (Vingilot)
+
+Tujuan:
+
 Membuat web server dinamis di Vingilot menggunakan Nginx + PHP-FPM agar dapat menjalankan file .php.
 
-📘 Deskripsi
-Domain: app.K14.com
+Deskripsi:
 
-Root: /var/www/app
+> Domain: app.K14.com
+
+> Root: /var/www/app
 
 File:
 
-index.php → Menampilkan informasi umum
+> index.php → Menampilkan informasi umum
 
-about.php → Menampilkan detail server atau identitas kelompok
+> about.php → Menampilkan detail server atau identitas kelompok
 
-Mengaktifkan PHP-FPM socket (/run/php/php7.4-fpm.sock)
+> Mengaktifkan PHP-FPM socket (/run/php/php7.4-fpm.sock)
 
-📂 File Script
+File Script
+```
 soal10_web_dinamis_vingilot.sh
+```
 
-🧩 Perintah Uji
-bash
-Salin kode
+Perintah Uji
+```
 curl http://app.K14.com
 curl http://app.K14.com/about.php
-✅ Output Diharapkan
-Menampilkan halaman PHP dinamis berisi teks atau informasi server.
+```
 
-
+Output Diharapkan Menampilkan halaman PHP dinamis berisi teks atau informasi server.
 
 ## Soal 11
 **File:** `soal_11.sh`  
