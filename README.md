@@ -1,5 +1,10 @@
 # Jarkom-Modul-2-2025-K-14
 
+| Nama                         | Nrp        |
+| ---------------------------- | ---------- |
+| Oscaryavat Viryavan          | 5027241053 |
+| Mohamad Arkan Zahir Asyafiq  | 5027241120 |
+
 ## Soal 1
 
 <img width="647" height="492" alt="Screenshot 2025-10-20 113759" src="https://github.com/user-attachments/assets/f0897692-fe6e-4513-b2d7-33995d344134" />
