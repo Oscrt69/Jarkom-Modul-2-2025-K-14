@@ -85,7 +85,7 @@ Akses `http://vingilot.k14.com` akan menampilkan IP asli user di halaman web.
 
 ---
 
-##Soal 15
+## Soal 15
 **File:** `soal_15.sh`  
 Melakukan **benchmark HTTP** menggunakan `ApacheBench (ab)` terhadap endpoint:
 - `/app/` (dynamic)
@@ -116,7 +116,7 @@ Perubahan DNS segera berlaku dan dapat diuji dengan `nslookup`.
 
 ---
 
-##Soal 17
+## Soal 17
 **File:** `soal_17.sh`  
 Mengatur agar service penting **otomatis berjalan saat booting**.
 
@@ -132,7 +132,7 @@ Semua service utama aktif otomatis setelah reboot.
 
 ---
 
-##Soal 18
+## Soal 18
 **File:** `soal_18.sh`  
 Menambahkan record DNS baru pada zone `k14.com`.
 
@@ -151,7 +151,7 @@ nslookup -type=CNAME morgoth.k14.com
 
 ---
 
-##Soal 19
+## Soal 19
 **File:** `soal_19.sh`  
 Melakukan **uji resolusi DNS dan validasi konten web** pada CNAME baru `havens.k14.com`.
 
@@ -165,7 +165,7 @@ Jika judul halaman sama, berarti CNAME berfungsi dengan benar.
 
 ---
 
-##Soal 20
+## Soal 20
 **File:** `soal_20.sh`  
 Membuat halaman web utama yang menampilkan tema **“War of Wrath: Lindon Bertahan”** dengan dua card:
 
